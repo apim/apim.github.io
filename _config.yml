@@ -2,3 +2,10 @@ theme: jekyll-theme-minimal
 title: Simple Spring Tutorials
 description: This blog helps budding programmers in Jakarta EE / Hibernate / Spring technologies
 show_downloads: false
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - index.md
