@@ -1,5 +1,5 @@
-# Classic Jakarta EE Architecture 
+## Welcome to Simple Spring Tutorials
 
-Traditional Java Enterprise Edition multi-tier architecture comes from the classic Java 2 EE Blue Print which mentions 5 organizational blocks for a multi tier application. These blocks are shown below along with their current implementing/providing technologies/frameworks for application development.
+This blog hosts various tutorial articles on Spring, Hibernet, JMS, Spring MVC, Spring Integration etc. to help new starters in these topics. Below is a list of all pages.
 
-![Jakarta EE Architecture](images/j2ee_architecture)
+* [Classic Jakarta EE Architecture](01_Classic_Jakarta_EE_Architecture.md)

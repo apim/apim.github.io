@@ -9,3 +9,4 @@ relative_links:
   collections: true
 include:
   - index.md
+  - 01_Classic_Jakarta_EE_Architecture.md
