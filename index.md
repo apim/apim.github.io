@@ -1,4 +1,4 @@
-## Welcome to Simple Spring Tutorials
+# Welcome to Simple Spring Tutorials
 
 This blog hosts various tutorial articles on Spring, Hibernet, JMS, Spring MVC, Spring Integration etc. to help new starters in these topics. Below is a list of all pages.
 

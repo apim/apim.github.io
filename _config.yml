@@ -1,6 +1,6 @@
 theme: jekyll-theme-minimal
 title: Simple Spring Tutorials
-description: This blog helps budding programmers in Jakarta EE / Hibernate / Spring technologies
+description: This blog helps budding programmers in various Jakarta EE & Spring technologies
 show_downloads: false
 plugins:
   - jekyll-relative-links
