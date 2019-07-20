@@ -99,7 +99,10 @@ public class TestCode {
 ```
 
 You shall get output like this.
-> 1, APIM, 500
+
+```
+1, APIM, 500
+```
 
 Now in this example **ClassPathXmlApplicationContext** has been used as spring container. There is another popular container viz. *FileSystemXmlApplicationContext*. The differences are straightforward - first one allows loading of context definition only from classpath where the second one allows loading of the same from filesystem. There is also a third implementation - *WebXmlApplicationContext*, which is used when Spring framework is working in a web application.
 
@@ -129,7 +132,7 @@ This shall result in *true* being printed as container will have one object only
 
 ## Custom Bean Initialisation
 
-Spring allows you to fine tune an object creation by providing a callback method. This is simply a hook for developers to do some customisation once the bean is instantiated by the container. To do such, XML configuration requires the attribute **init-method** and the bean class shall have the corresponding method definition. Below modification of previous XML file and a new bean class viz. CustomerCBI.java will illustrate this.
+Spring allows you to fine tune an object creation by providing a callback method. This is simply a hook for developers to do some customisation once the bean is instantiated by the container. To do such, XML configuration requires the attribute **init-method** and the bean class shall have the corresponding method definition. Below modification of previous XML file and a new bean class viz. *CustomerCBI.java* will illustrate this.
 
 ```xml
 <bean id="customerCBI" class="apim.github.tutorial.CustomerCBI" init-method="customInit">
@@ -165,9 +168,10 @@ private static void test3() {
 }
 ```
 
-> Custom Bean Initialisation...
-
-> 10, Test User
+```
+Custom Bean Initialisation...
+10, Test User
+```
 
 ## Bean Inheritance
 
@@ -194,7 +198,7 @@ By XML definition we can make one bean inherited from another bean. This is not 
 </beans>
 ```
 
-Customer class remains same and a new **SpecialCustomer.java** is defined.
+Customer class remains same and a new *SpecialCustomer.java* is defined.
 
 ```java
 package apim.github.tutorial;
@@ -224,6 +228,99 @@ private static void test4() {
 ```
 
 This shall print like this.
-> 1, APIM, 500
 
-> 1, APIM, 2000, 1000
+```
+1, APIM, 500
+1, APIM, 2000, 1000
+```
+
+## Dependency Injection
+
+Probably the most popular feature of Spring is DI / IoC. In spring context it means bean A shall not instantiate bean B rather Spring shall instantiate both bean A & bean B and then pass bean B to bean A. Now these dependencies can be injected in two ways: via *Constructor* and via *Setter Method*.
+
+At first, let's explore dependency injection by constructor. Create a new bean definition for *Address* and make a new POJO class for the same (prepare a new spring context as **spring-context-3.xml**). Make a new customerDI bean there to accept Address being injected via constructor - using **constructor-arg** parameter. Develop a new constructor and new address field at *CustomerDI.java*, copying the rest from Customer.java file. Finally, develop a new test method to print the complete result.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="customer" class="apim.github.tutorial.CustomerDI">
+		<property name="id" value="1" />
+		<property name="name" value="APIM" />
+		<property name="balance" value="500" />
+		<constructor-arg ref="address" />
+	</bean>
+
+	<bean id="address" class="apim.github.tutorial.Address">
+		<property name="location" value="Torre de Alba" />
+		<property name="city" value="Panama City" />
+	</bean>
+</beans>
+```
+
+```java
+package apim.github.tutorial;
+
+public class Address {
+
+	private String location;
+	private String city;
+
+	// getters and setters
+}
+```
+
+```java
+package apim.github.tutorial;
+
+public class CustomerDI {
+
+	private int id;
+	private String name;
+	private int balance;
+	private Address address;
+
+	public CustomerDI(Address address) {
+		this.address = address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public CustomerDI() {
+	}
+
+	public CustomerDI(int id, String name, int balance, Address address) {
+		this.id = id;
+		this.name = name;
+		this.balance = balance;
+		this.address = address;
+	}
+
+	// getters and setters
+}
+```
+
+```java
+private static void test5() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context-3.xml");
+	CustomerDI c = (CustomerDI) ctx.getBean("customer");
+	System.out.println(c.getId() + ", " + c.getName() + ", " + c.getBalance());
+	System.out.println(c.getAddress().getLocation() + ", " + c.getAddress().getCity());
+	ctx.close();
+}
+```
+
+Output shall look like this.
+
+```
+1, APIM, 500
+Torre de Alba, Panama City
+```
+
+There can be cases of **ambiguity** when there are multiple constructor arguments. To counter that, Spring provides more than one solution.
