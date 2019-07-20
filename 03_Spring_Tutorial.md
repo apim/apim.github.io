@@ -1,6 +1,6 @@
 # Spring Tutorial
 
-This tutorial will cover all basic concepts of Spring and all tutorials here will consist of full hands-on practices. Platform used is Windows 10, with all *latest versions* of *Eclipse*, *Java* & *Maven* installed. Complete source for all tutorials is given at the end of the pages as a link to the GitHub repository. Begin by creating a new Maven Java project in Eclipse as spring-tutorial.
+This tutorial will cover all basic concepts of Spring and all tutorials here will consist of full hands-on practices. Platform used is Windows 10, with all *latest versions* of *Eclipse*, *Java* & *Maven* installed. Complete source for all tutorials is given at the end of the pages as a link to the GitHub repository. Begin by creating a new Maven Java project in Eclipse as *spring-tutorial*.
 
 ## First Example
 
@@ -37,7 +37,7 @@ Add a pom file like below.
 </project>
 ```
 
-Now create the first actual element - a spring bean definition XML file. Name it anything e.g. spring-context-1.xml. Using this file Spring instantiates and populates the classes defined within it i.e. the Beans. In brief, it contains bean definitions where each bean corresponds to a POJO. Bean definitions shall have unique Id and FQN as class.
+Now create the first actual element - a spring bean definition XML file. Name it anything e.g. **spring-context-1.xml**. Using this file Spring instantiates and populates the classes defined within it i.e. the Beans. In brief, it contains bean definitions where each bean corresponds to a POJO. Bean definitions shall have unique Id and FQN as class.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -93,7 +93,7 @@ public class Customer {
 }
 ```
 
-Finally, create a test class as TestCode.java. Here these things will happen:
+Finally, create a test class as **TestCode.java**. Here these things will happen:
 
 * The spring context will be loaded from classpath
 * The bean will be accessed from the context
@@ -122,4 +122,28 @@ public class TestCode {
 You shall get output like
 > 1, APIM, 500
 
-Now in this example ApplicationContext has been used as container. There is another container viz. BeanFactory although it is no longer being used in present days' applications as ApplicationContext already has all the features of the other one. There are two main implementations of ApplicationContext: ClassPathXmlApplicationContext and FileSystemXmlApplicationContext. The differences are straightforward - first one allows loading of context definition only from classpath where the second one allows loading of the same from filesystem. There is also a third implementation - WebXmlApplicationContext. This one functions when Spring is used in a web application.
+Now in this example **ClassPathXmlApplicationContext** has been used as spring container. There is another popular container viz. *FileSystemXmlApplicationContext*. The differences are straightforward - first one allows loading of context definition only from classpath where the second one allows loading of the same from filesystem. There is also a third implementation - *WebXmlApplicationContext*, which is used when Spring framework is working in a web application.
+
+## Scopes for a Bean
+
+When defining a bean, it's scope can be customised. How a bean will be instantiated by the Spring Container - that is governed by this scope parameter. There are 5 possible values for scope:
+
+* **singleton** - one instance of the bean always and this is default scope
+* **prototype** - each request results into new objects
+* **request** - bean instance is valid for one HTTP request
+* **session** - bean instance is valid for one HTTP session
+* **global-session** - bean instance is valid for global HTTP session
+
+To understand singleton and prototype scopes, let's do a small test. As singleton is the default scope, without changing bean definition create a new test method as below
+
+```java
+private static void test2() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context-1.xml");
+	Customer c1 = (Customer) ctx.getBean("customer");
+	Customer c2 = (Customer) ctx.getBean("customer");
+	System.out.println(c1 == c2);
+	ctx.close();
+}
+```
+
+This shall result in *true* being printed as container will have one object only. Now if bean definition is modified as `<bean id="customer" class="apim.github.tutorial.Customer" scope="prototype">` in the xml file, the result will be *false*. This shows that for prototype scope, container always creates new bean instances.
