@@ -323,4 +323,48 @@ Output shall look like this.
 Torre de Alba, Panama City
 ```
 
-There can be cases of **ambiguity** when there are multiple constructor arguments. To counter that, Spring provides more than one solution.
+There can be cases of **ambiguity** when there are *multiple constructor arguments*. To counter that, Spring provides more than one solution.
+
+1. Ordering of parameters 
+
+```xml
+<bean id="customerDI" class="apim.github.tutorial.CustomerDI">
+	<constructor-arg ref="address1"/>
+	<constructor-arg ref="address2"/>
+</bean>
+```
+
+2. Defining type of parameters 
+
+```xml
+<bean id="customerDI" class="apim.github.tutorial.CustomerDI">
+	<constructor-arg type="Integer" value="75"/>
+	<constructor-arg type="String" value="ABCXYZ"/>
+</bean>
+```
+
+3. Setting the index of parameters 
+
+```xml
+<bean id="customerDI" class="apim.github.tutorial.CustomerDI">
+	<constructor-arg index="0" ref="address1"/>
+	<constructor-arg index="1" ref="address2"/>
+</bean>
+```
+
+Secondly, there is the case of dependency injection by setter methods. Here the process is straightforward and dependency is just like another bean property. If the dependency is on another bean/object then *ref* attribute is used where if it is on some primitive data type then *value* attribute is used. The following sample bean definition will illustrate this.
+
+```xml
+<bean id="customer" class="apim.github.tutorial.CustomerDI">
+	<property name="id" value="1" />
+	<property name="name" value="APIM" />
+	<property name="balance" value="500" />
+	<property name="address" ref="address"/>
+</bean>
+```
+
+## Injecting Java Collection
+
+Spring provides 4 options to work with collections viz. list, set, map and properties. And except properties all of them accept both value (i.e. collection containing primitives) and ref arguments (i.e. collection containing objects/other beans). Below example will elaborate the behavior.
+
+At first, let's prepare a new context XML like CollectionContext.xml for bean definitions. This will consist of all supported types and will combine both primitives and objects. Required new beans are also defined.
