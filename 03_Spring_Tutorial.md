@@ -292,16 +292,6 @@ public class CustomerDI {
 		this.address = address;
 	}
 
-	public CustomerDI() {
-	}
-
-	public CustomerDI(int id, String name, int balance, Address address) {
-		this.id = id;
-		this.name = name;
-		this.balance = balance;
-		this.address = address;
-	}
-
 	// getters and setters
 }
 ```
@@ -491,3 +481,61 @@ This shall print like below.
 {book1=Let Us C, book2=123-Mastering Programming-Oscar Martin}
 {part1=Introduction}
 ```
+
+## Bean Autowiring
+
+Spring manages dependency injection by constructor-arg and property elements. However, Spring also has *autowiring* feature which can do this job automatically and thus it reduces a lot of XML configuration. There are in general 5 types of autowiring and a brief overview of them is listed below.
+
+1. **no**: default behavior is to have no automatic bean wiring
+2. **byName**: if some bean is defined with autowire as byName, then Spring tries matching and autowiring of bean property by the names
+3. **byType**: if some bean is defined with autowire as byType, then Spring tries matching and autowiring of bean property by the data types
+4. **constructor**: same as byType but matching is done for constructor arguments
+5. **auto**: here Spring at first attempts autowiring by constructor, if that fails then by byType
+
+There will be *runtime exception* when byName / byType / constructor autowiring processes are used and there is not exactly one match found.
+
+To test the *byName* autowiring, create a new bean configuration **spring-context-5.xml** like below.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="customer" class="apim.github.tutorial.CustomerDI" autowire="byName">
+		<property name="id" value="1" />
+		<property name="name" value="APIM" />
+		<property name="balance" value="500" />
+	</bean>
+
+	<bean id="address" class="apim.github.tutorial.Address">
+		<property name="location" value="City Center" />
+		<property name="city" value="Athlone" />
+	</bean>
+</beans>
+```
+
+*CustomerDI.java* has one field as address hence Spring will automatically look for a bean named address. As Spring creates object using default constructor only, hence CustomerDI.java needs to be updated with a default constructor. Next, use the previously created `test5()` method to verify the functionality, only by changing the xml file name being loaded. If the second bean definition is not named as *address* then there will be **NullPointerException** from the container. Now to test the *byType* autowiring simply just change the `byName` text to `byType` in the XML file. Here Spring will look for a bean whose type/class attribute is Address. In case there are multiple such addresses defined, **NoUniqueBeanDefinitionException** exception will be thrown. To test autowiring by *constructor*, at first update the CustomerDI.java to have a new (now third actually) constructor like below.
+
+```java
+public CustomerDI(int id, String name, int balance, Address address) {
+	this.id = id;
+	this.name = name;
+	this.balance = balance;
+	this.address = address;
+}
+```
+
+Then update the bean configuration file to have a new bean definition. Here the index attribute is used because the constructor is multi-valued. To test this, update the earlier `test5()` method to use latest bean id `customerAW`. Testing shall produce output matched with earlier example.
+
+```xml
+<bean id="customerAW" class="apim.github.tutorial.CustomerDI" autowire="constructor">
+	<constructor-arg index="0" value="1" />
+	<constructor-arg index="1" value="APIM" />
+	<constructor-arg index="2" value="500" />
+</bean>
+```
+
+**Complete source code for this tutorial:** https://github.com/apim/spring-tutorial
