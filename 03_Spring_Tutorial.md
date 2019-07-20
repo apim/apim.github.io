@@ -153,7 +153,7 @@ This shall result in *true* being printed as container will have one object only
 Spring allows you to fine tune an object creation by providing a callback method. This is simply a hook for developers to do some customisation once the bean is instantiated by the container. To do such, XML configuration requires the attribute **init-method** and the bean class shall have the corresponding method definition. Below modification of previous XML file and a new bean class viz. CustomerCBI.java will illustrate this.
 
 ```xml
-<bean id="customer" class="apim.github.tutorial.CustomerCBI" init-method="customInit">
+<bean id="customerCBI" class="apim.github.tutorial.CustomerCBI" init-method="customInit">
 	<property name="cId" value="10" />
 	<property name="cName" value="Test User" />
 </bean>
@@ -168,7 +168,7 @@ public class CustomerCBI {
 	private String cName;
 
 	public void customInit() {
-		System.out.println("Custom Bean Initialization...");
+		System.out.println("Custom Bean Initialisation...");
 	}
 
 	public int getcId() {
@@ -201,7 +201,7 @@ private static void test3() {
 ```
 
 > Custom Bean Initialisation...
-> 10, Test User
+10, Test User
 
 ## Bean Inheritance
 
