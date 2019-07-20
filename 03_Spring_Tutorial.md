@@ -134,7 +134,7 @@ When defining a bean, it's scope can be customised. How a bean will be instantia
 * **session** - bean instance is valid for one HTTP session
 * **global-session** - bean instance is valid for global HTTP session
 
-To understand singleton and prototype scopes, let's do a small test. As singleton is the default scope, without changing bean definition create a new test method as below
+To understand singleton and prototype scopes, let's do a small test. As singleton is the default scope, without changing bean definition create a new test method as below.
 
 ```java
 private static void test2() {
@@ -147,3 +147,62 @@ private static void test2() {
 ```
 
 This shall result in *true* being printed as container will have one object only. Now if bean definition is modified as `<bean id="customer" class="apim.github.tutorial.Customer" scope="prototype">` in the xml file, the result will be *false*. This shows that for prototype scope, container always creates new bean instances.
+
+## Custom Bean Initialization
+
+Spring allows you to fine tune an object creation by providing a callback method. This is simply a hook for developers to do some customisation once the bean is instantiated by the container. To do such, XML configuration requires the attribute **init-method** and the bean class shall have the corresponding method definition. Below modification of previous XML file and a new bean class viz. CustomerCBI.java will illustrate this.
+
+```xml
+<bean id="customer" class="apim.github.tutorial.CustomerCBI" init-method="customInit">
+	<property name="cId" value="10" />
+	<property name="cName" value="Test User" />
+</bean>
+```
+
+```java
+package apim.github.tutorial;
+
+public class CustomerCBI {
+
+	private int cId;
+	private String cName;
+
+	public void customInit() {
+		System.out.println("Custom Bean Initialization...");
+	}
+
+	public int getcId() {
+		return cId;
+	}
+
+	public void setcId(int cId) {
+		this.cId = cId;
+	}
+
+	public String getcName() {
+		return cName;
+	}
+
+	public void setcName(String cName) {
+		this.cName = cName;
+	}
+}
+```
+
+Use the below test method to verify the same.
+
+```java
+private static void test3() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context-1.xml");
+	CustomerCBI c = (CustomerCBI) ctx.getBean("customerCBI");
+	System.out.println(c.getcId() + ", " + c.getcName());
+	ctx.close();
+}
+```
+
+> Custom Bean Initialisation...
+> 10, Test User
+
+## Bean Inheritance
+
+By XML definition we can make one bean inherited from another bean. This is not exactly Java inheritance although the core concept remains same. Child bean will have all the properties from parent bean and can also override them. Following example will show this.
