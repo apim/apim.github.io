@@ -517,7 +517,9 @@ To test the *byName* autowiring, create a new bean configuration **spring-contex
 </beans>
 ```
 
-*CustomerDI.java* has one field as address hence Spring will automatically look for a bean named address. As Spring creates object using default constructor only, hence CustomerDI.java needs to be updated with a default constructor. Next, use the previously created `test5()` method to verify the functionality, only by changing the xml file name being loaded. If the second bean definition is not named as *address* then there will be **NullPointerException** from the container. Now to test the *byType* autowiring simply just change the `byName` text to `byType` in the XML file. Here Spring will look for a bean whose type/class attribute is Address. In case there are multiple such addresses defined, **NoUniqueBeanDefinitionException** exception will be thrown. To test autowiring by *constructor*, at first update the CustomerDI.java to have a new (now third actually) constructor like below.
+*CustomerDI.java* has one field as address hence Spring will automatically look for a bean named address. As Spring creates object using default constructor only, hence CustomerDI.java needs to be updated with a default constructor. Next, use the previously created `test5()` method to verify the functionality, only by changing the xml file name being loaded. If the second bean definition is not named as *address* then there will be **NullPointerException** from the container.
+
+Now to test the *byType* autowiring simply just change the `byName` text to `byType` in the XML file. Here Spring will look for a bean whose type/class attribute is Address. In case there are multiple such addresses defined, **NoUniqueBeanDefinitionException** exception will be thrown. To test autowiring by *constructor*, at first update the CustomerDI.java to have a new (now third actually) constructor like below.
 
 ```java
 public CustomerDI(int id, String name, int balance, Address address) {
@@ -538,4 +540,4 @@ Then update the bean configuration file to have a new bean definition. Here the 
 </bean>
 ```
 
-**Complete source code for this tutorial:** https://github.com/apim/spring-tutorial
+**Complete source code for this tutorial:** [GitHub](https://github.com/apim/spring-tutorial)
