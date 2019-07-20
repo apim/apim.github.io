@@ -325,7 +325,7 @@ Torre de Alba, Panama City
 
 There can be cases of **ambiguity** when there are *multiple constructor arguments*. To counter that, Spring provides more than one solution.
 
-1. Ordering of parameters 
+* Ordering of parameters 
 
 ```xml
 <bean id="customerDI" class="apim.github.tutorial.CustomerDI">
@@ -334,7 +334,7 @@ There can be cases of **ambiguity** when there are *multiple constructor argumen
 </bean>
 ```
 
-2. Defining type of parameters 
+* Defining type of parameters 
 
 ```xml
 <bean id="customerDI" class="apim.github.tutorial.CustomerDI">
@@ -343,7 +343,7 @@ There can be cases of **ambiguity** when there are *multiple constructor argumen
 </bean>
 ```
 
-3. Setting the index of parameters 
+* Setting the index of parameters 
 
 ```xml
 <bean id="customerDI" class="apim.github.tutorial.CustomerDI">
@@ -352,7 +352,7 @@ There can be cases of **ambiguity** when there are *multiple constructor argumen
 </bean>
 ```
 
-Secondly, there is the case of dependency injection by setter methods. Here the process is straightforward and dependency is just like another bean property. If the dependency is on another bean/object then *ref* attribute is used where if it is on some primitive data type then *value* attribute is used. The following sample bean definition will illustrate this.
+Secondly, there is the case of dependency injection by setter methods. Here the process is straightforward and dependency is just like another bean property. If the dependency is on another bean/object then **ref** attribute is used where if it is on some primitive data type then **value** attribute is used. The following sample bean definition will illustrate this.
 
 ```xml
 <bean id="customer" class="apim.github.tutorial.CustomerDI">
@@ -365,6 +365,129 @@ Secondly, there is the case of dependency injection by setter methods. Here the 
 
 ## Injecting Java Collection
 
-Spring provides 4 options to work with collections viz. list, set, map and properties. And except properties all of them accept both value (i.e. collection containing primitives) and ref arguments (i.e. collection containing objects/other beans). Below example will elaborate the behavior.
+Spring provides 4 options to work with collections viz. *list*, *set*, *map* and *properties*. Except *properties*, all of them accept both *value* (i.e. collection containing primitives) and *ref* arguments (containing objects/other beans). Below example will elaborate the behavior. At first, let's prepare a new context XML **spring-context-4.xml** which will consist of all supported types.
 
-At first, let's prepare a new context XML like CollectionContext.xml for bean definitions. This will consist of all supported types and will combine both primitives and objects. Required new beans are also defined.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="dissertation" class="apim.github.tutorial.Dissertation">
+		<property name="mentorList">
+			<list>
+				<value>Niambh Connar</value>
+				<ref bean="designation" />
+			</list>
+		</property>
+		<property name="approverSet">
+			<set>
+				<value>Joe Walsh</value>
+				<ref bean="designation" />
+			</set>
+		</property>
+		<property name="referenceMap">
+			<map>
+				<entry key="book1" value="Let Us C"></entry>
+				<entry key="book2" value-ref="book"></entry>
+			</map>
+		</property>
+		<property name="chapterProperties">
+			<props>
+				<prop key="part1">Introduction</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="designation" class="apim.github.tutorial.Designation">
+		<property name="post" value="Professor" />
+		<property name="unit" value="Computer Science" />
+	</bean>
+
+	<bean id="book" class="apim.github.tutorial.Book">
+		<property name="isbn" value="123" />
+		<property name="title" value="Mastering Programming" />
+		<property name="author" value="Oscar Martin" />
+	</bean>
+</beans>
+```
+
+Next create the associated Java POJO classes viz. *Dissertation.java*, *Designation.java* & *Book.java*. Few of them have *toString()* overridden just for easy testing through console.
+
+```java
+package apim.github.tutorial;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+@SuppressWarnings("rawtypes")
+public class Dissertation {
+
+	private List mentorList;
+	private Set approverSet;
+	private Map referenceMap;
+	private Properties chapterProperties;
+
+	// getters and setters
+}
+```
+
+```java
+package apim.github.tutorial;
+
+public class Designation {
+
+	private String post;
+	private String unit;
+
+	// getters and setters
+
+	public String toString() {
+		return post + ": " + unit;
+	}
+}
+```
+
+```java
+package apim.github.tutorial;
+
+public class Book {
+
+	private int isbn;
+	private String title;
+	private String author;
+
+	// getters and setters
+
+	public String toString() {
+		return isbn + "-" + title + "-" + author;
+	}
+}
+```
+
+Write a new test method to validate the concept.
+
+```java
+private static void test6() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context-4.xml");
+	Dissertation obj = (Dissertation) ctx.getBean("dissertation");
+	System.out.println(obj.getMentorList());
+	System.out.println(obj.getApproverSet());
+	System.out.println(obj.getReferenceMap());
+	System.out.println(obj.getChapterProperties());
+	ctx.close();
+}
+```
+
+This shall print like below.
+
+```
+[Niambh Connar, Professor: Computer Science]
+[Joe Walsh, Professor: Computer Science]
+{book1=Let Us C, book2=123-Mastering Programming-Oscar Martin}
+{part1=Introduction}
+```
