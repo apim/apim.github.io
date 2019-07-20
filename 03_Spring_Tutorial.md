@@ -1,6 +1,8 @@
 # Spring Tutorial
 
-This tutorial will cover all basic concepts of Spring and all tutorials here will consist of full hands-on practices. Platform used is Windows 10, with all *latest versions* of *Eclipse*, *Java* & *Maven* installed. Complete source for all tutorials is given at the end of the pages as a link to the GitHub repository. Begin by creating a new Maven Java project in Eclipse as *spring-tutorial*.
+This tutorial will cover all basic concepts of Spring and all tutorials here will consist of full hands-on practices. Platform used is Windows 10, with all *latest versions* of *Eclipse*, *Java* & *Maven* installed. Complete source for all tutorials is given at the end of the pages as a link to the GitHub repository. Finally, for the sake of brevity, standard auto generated getter and setter methods are ommitted in below code snippets.
+
+Begin by creating a new Maven Java project in Eclipse as *spring-tutorial*.
 
 ## First Example
 
@@ -66,34 +68,11 @@ public class Customer {
 	private String name;
 	private int balance;
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getBalance() {
-		return balance;
-	}
-
-	public void setBalance(int balance) {
-		this.balance = balance;
-	}
-
+	// getters and setters
 }
 ```
 
-Finally, create a test class as **TestCode.java**. Here these things will happen:
+Finally, create a new class for testing as **TestCode.java**. Here these things will happen:
 
 * The spring context will be loaded from classpath
 * The bean will be accessed from the context
@@ -119,7 +98,7 @@ public class TestCode {
 }
 ```
 
-You shall get output like
+You shall get output like this.
 > 1, APIM, 500
 
 Now in this example **ClassPathXmlApplicationContext** has been used as spring container. There is another popular container viz. *FileSystemXmlApplicationContext*. The differences are straightforward - first one allows loading of context definition only from classpath where the second one allows loading of the same from filesystem. There is also a third implementation - *WebXmlApplicationContext*, which is used when Spring framework is working in a web application.
@@ -148,7 +127,7 @@ private static void test2() {
 
 This shall result in *true* being printed as container will have one object only. Now if bean definition is modified as `<bean id="customer" class="apim.github.tutorial.Customer" scope="prototype">` in the xml file, the result will be *false*. This shows that for prototype scope, container always creates new bean instances.
 
-## Custom Bean Initialization
+## Custom Bean Initialisation
 
 Spring allows you to fine tune an object creation by providing a callback method. This is simply a hook for developers to do some customisation once the bean is instantiated by the container. To do such, XML configuration requires the attribute **init-method** and the bean class shall have the corresponding method definition. Below modification of previous XML file and a new bean class viz. CustomerCBI.java will illustrate this.
 
@@ -171,21 +150,7 @@ public class CustomerCBI {
 		System.out.println("Custom Bean Initialisation...");
 	}
 
-	public int getcId() {
-		return cId;
-	}
-
-	public void setcId(int cId) {
-		this.cId = cId;
-	}
-
-	public String getcName() {
-		return cName;
-	}
-
-	public void setcName(String cName) {
-		this.cName = cName;
-	}
+	// getters and setters
 }
 ```
 
@@ -201,8 +166,64 @@ private static void test3() {
 ```
 
 > Custom Bean Initialisation...
-10, Test User
+
+> 10, Test User
 
 ## Bean Inheritance
 
-By XML definition we can make one bean inherited from another bean. This is not exactly Java inheritance although the core concept remains same. Child bean will have all the properties from parent bean and can also override them. Following example will show this.
+By XML definition we can make one bean inherited from another bean. This is not exactly Java inheritance although the core concept remains same. Child bean will have all the properties from parent bean and can also override them. Following example will show this. Start by creating a new spring context configuration as *spring-context-2.xml*.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<bean id="customer" class="apim.github.tutorial.Customer">
+		<property name="id" value="1" />
+		<property name="name" value="APIM" />
+		<property name="balance" value="500" />
+	</bean>
+
+	<bean id="spCustomer" class="apim.github.tutorial.SpecialCustomer" parent="customer">
+		<property name="balance" value="2000" />
+		<property name="loan" value="1000" />
+	</bean>
+</beans>
+```
+
+Customer class remains same and a new **SpecialCustomer.java** is defined.
+
+```java
+package apim.github.tutorial;
+
+public class SpecialCustomer {
+
+	private int id;
+	private String name;
+	private int balance;
+	private int loan;
+
+	// getters and setters
+}
+```
+
+Write a test method to verify this.
+
+```java
+private static void test4() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context-2.xml");
+	Customer c = (Customer) ctx.getBean("customer");
+	SpecialCustomer spc = (SpecialCustomer) ctx.getBean("spCustomer");
+	System.out.println(c.getId() + ", " + c.getName() + ", " + c.getBalance());
+	System.out.println(spc.getId() + ", " + spc.getName() + ", " + spc.getBalance() + ", " + spc.getLoan());
+	ctx.close();
+}
+```
+
+This shall print like this.
+> 1, APIM, 500
+
+> 1, APIM, 2000, 1000
