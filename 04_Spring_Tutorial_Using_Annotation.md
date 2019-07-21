@@ -120,4 +120,70 @@ These will show that the bean initialisation is done properly but obviously valu
 null, null
 ```
 
-To test the next annotation @Qualifier, some dummy data is required hence the bean configuration XML is populated. As @Autowired works by default as byType autowiring, @Qualified is used to resolve conflicts when there are multiple matches of same type of bean. Essentially, this works as byName autowiring. Below example will illustrate this (desired output is the first address bean).
+To illustrate the next annotation *Qualifier*, below sample XML shows creation of 2 beans with distinct id values. As @Autowired works by default as byType autowiring, @Qualified is used to resolve conflicts when there are multiple matches of same type of bean. For the associated Java code, only change required is the `@Qualifier(value = "address1")` line.
+
+```xml	
+<bean id="address1" class="apim.github.tutorial.AddressAnnot">
+	<property name="location" value="Torre de Alba" />
+	<property name="city" value="Panama City" />
+</bean>
+
+<bean id="address2" class="apim.github.tutorial.AddressAnnot">
+	<property name="location" value="City Center" />
+	<property name="city" value="Athlone" />
+</bean>
+```
+
+```java
+@Autowired
+@Qualifier(value = "address1")
+private AddressAnnot address;
+
+// rest remains same
+}
+```
+
+For custom bean initialisation, likewise *init-method*, counterpart annotation is **PostConstruct**. However, although Spring framework makes use of this annotation, it is not defined within Spring rather defined within **common-annotations** package. Therefore, to test it at first add the below Maven dependency.
+
+```xml
+<dependency>
+	<groupId>javax.annotation</groupId>
+	<artifactId>javax.annotation-api</artifactId>
+	<version>1.3.2</version>
+</dependency>
+```
+
+Then create a POJO **CustomerPC.java** by copying the old *Customer.java* and adding the below snippet there.
+
+```java
+package apim.github.tutorial;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.stereotype.Component;
+
+@Component // add this
+public class CustomerPC {
+
+	private int id;
+	private String name;
+	private int balance;
+
+	@PostConstruct // add this
+	public void customInit() {
+		System.out.println("Custom Bean Initialisation via annotation...");
+	}
+	
+	// rest remains same
+}
+```
+
+To test, create a new test method as below as you shall see the above print statement.
+
+```java
+private static void test9() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context-6.xml");
+	ctx.getBean("customerPC");
+	ctx.close();
+}
+```
