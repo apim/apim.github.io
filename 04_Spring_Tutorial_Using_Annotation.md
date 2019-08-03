@@ -178,7 +178,7 @@ public class CustomerPC {
 }
 ```
 
-To test, create a new test method as below as you shall see the above print statement.
+To test, create a new test method as below and you shall see the above print statement.
 
 ```java
 private static void test9() {
@@ -187,3 +187,160 @@ private static void test9() {
 	ctx.close();
 }
 ```
+
+Annotation *@Resource* works very similar to @Autowired and the primary difference is that it works by default as byName autowiring. Hence if you had similar bean configuration XML like above with 2 address beans 'address1* and *address2*, then this snippet shall be used for *@Resource* in an annotated Customer class - `@Resource(name="address2") private Address address;`.
+
+Finally, the last annotation - `@Scope`. The use of this annotation is straightforward - to define the bean scope which was earlier done via the scope attribute at XML configuration. Default value and all other scope behaviors remain as it is with the XML configuration. A sample usage shall look like this - `@Component @Scope("prototype") public class Customer { // }`.
+
+## @Configuration and @Bean Annotations
+
+Spring also allows writing direct Java code that can totally replace the bean definition / context XML. Let's develop some new code to test this feature - create a new class viz. **ApplicationConfig.java** as below which uses the other annotated POJO classes. Annotation *@Configuration* tells Spring that this class holds bean definitions. This class can contain any number of methods and methods which are annotated as *@Bean* are interpreted by Spring as that they return a bean instance. 
+
+```java
+package apim.github.tutorial;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ApplicationConfig {
+
+	@Bean
+	public CustomerAnnot customer() {
+		CustomerAnnot cust = new CustomerAnnot();
+		cust.setId(1);
+		cust.setName("APIM");
+		cust.setBalance(500);
+		return cust;
+	}
+
+	@Bean
+	public AddressAnnot address() {
+		AddressAnnot address = new AddressAnnot();
+		address.setLocation("Santa Clara");
+		address.setCity("At US");
+		return address;
+	}
+}
+```
+
+Now create a new test method `test10()` to verify the same feature. Note the new type of Spring class loader **AnnotationConfigApplicationContext** being used.
+
+```java
+private static void test10() {
+	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+	CustomerAnnot c = (CustomerAnnot) ctx.getBean("customer");
+	System.out.println(c.getId() + ", " + c.getName() + ", " + c.getBalance());
+	System.out.println(c.getAddress().getLocation() + ", " + c.getAddress().getCity());
+	ctx.close();
+}
+```
+
+This shall print like below.
+
+```
+1, APIM, 500
+Santa Clara, At US
+```
+
+In addition, *AnnotationConfigApplicationContext*  accepts Java varargs in its constructor hence, we can pass multiple arguments as different sources for annotated Spring bean configuration. Moreover, it offers a useful method `register()` by which configuration classes can be added on the fly later instead of declaring through constructor (`refresh()` method is to be used afterwards in that case to load the context). Below examples shall illustrate the idea.
+
+At first split the earlier bean definition class into two separate classes.
+
+```java
+package apim.github.tutorial;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class Cfg1 {
+
+	@Bean
+	public CustomerAnnot customer() {
+		CustomerAnnot cust = new CustomerAnnot();
+		cust.setId(1);
+		cust.setName("APIM");
+		cust.setBalance(500);
+		return cust;
+	}
+}
+```
+
+```java
+package apim.github.tutorial;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class Cfg2 {
+
+	@Bean
+	public CustomerAnnot customer() {
+		CustomerAnnot cust = new CustomerAnnot();
+		cust.setId(1);
+		cust.setName("APIM");
+		cust.setBalance(500);
+		return cust;
+	}
+}
+```
+
+Next, create a new test method to combine and verify the previous bean definitions.
+
+```java
+private static void test11() {
+	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Cfg1.class, Cfg2.class);
+	CustomerAnnot c = (CustomerAnnot) ctx.getBean("customer");
+	System.out.println(c.getId() + ", " + c.getName() + ", " + c.getBalance());
+	System.out.println(c.getAddress().getLocation() + ", " + c.getAddress().getCity());
+	ctx.close();
+}
+```
+
+You shall see output like this.
+
+```
+10, APIM, 3500
+A town, A city
+```
+
+There is another way to load multiple configurations. This is done by `@Import` annotation. To understand this, look at the below example.
+
+```java
+package apim.github.tutorial;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+
+@Configuration
+@Import({ Cfg1.class, Cfg2.class })
+public class ApplicationConfigVA {
+
+}
+```
+
+Create a new test method which shall give same result as of above.
+
+```java
+private static void test12() {
+	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(ApplicationConfigVA.class);
+	CustomerAnnot c = (CustomerAnnot) ctx.getBean("customer");
+	System.out.println(c.getId() + ", " + c.getName() + ", " + c.getBalance());
+	System.out.println(c.getAddress().getLocation() + ", " + c.getAddress().getCity());
+	ctx.close();
+}
+```
+
+Lastly, Java based Spring configuration also supports all other features of XML based configuration like defining bean scope or specifying special initialisation method. Below code snippet will show how to do this.
+
+```java
+@Bean(initMethod="customInit")
+@Scope("prototype")
+public Customer customer() {
+
+}
+```
+
+**Complete source code for this tutorial:** [GitHub](https://github.com/apim/spring-tutorial)
