@@ -1,6 +1,6 @@
 # Welcome to Simple Spring Tutorials
 
-This blog hosts various tutorial articles on Spring, Hibernet, JMS, Spring MVC, Spring Integration etc. to help new starters in these topics. Below is a list of all tutorial pages.
+This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring MVC, Spring JDBC, Spring Data JPA, Spring Integration etc. topics. The goal is to help new starters cover all core areas with working examples in these technical fields. Below is a list of all tutorial pages.
 
 ## Core Spring Concepts
 
