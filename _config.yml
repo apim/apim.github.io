@@ -13,3 +13,4 @@ include:
   - 02_Spring_Overview.md
   - 03_Spring_Tutorial.md
   - 04_Spring_Tutorial_Using_Annotation.md
+  - 05_Spring_AOP_Tutorial.md
