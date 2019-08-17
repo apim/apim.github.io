@@ -16,4 +16,32 @@ Now there are 5 types of advice supported in Spring. A brief description is list
 4. **after-throwing** - executes if pointcut throws exception
 5. **around** - executes before and after pointcut invocation
 
-Begin by creating a new Maven Java project in Eclipse as *spring-aop-tutorial*.
+Begin by creating a new Maven Java project in Eclipse as *spring-aop-tutorial*. You can copy the base code like *pom.xml* from previous tutorial's project. Change artifact details there as shown below - all other dependencies shall remain same and new dependency for aspect shall be added.
+
+```xml
+<groupId>apim.github.tutorial</groupId>
+<artifactId>spring-aop</artifactId>
+<version>0.0.1-SNAPSHOT</version>
+<name>Spring AOP Tutorial</name>
+```
+
+```xml
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-aop</artifactId>
+	<version>5.1.8.RELEASE</version>
+</dependency>
+```
+
+Next create spring configuration XML. Note that aspect programming requires a new namespace `spring-aop`.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+```
