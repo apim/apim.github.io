@@ -58,6 +58,22 @@ Next create spring configuration XML **spring-context**. Note that aspect progra
 
 Now create actual bean definitions for spring aspect. Bean **instrumentalist** is the target object against which aspects are performed in this tutorial. Bean **audience** is the actual advice implementation. Tag `<aop:pointcut>` has expression parameter by which we can specify what parts of the application the concerned aspect shall apply to. The example expression points to a specific method `sing()` in the class `Instrumentalist`, however, we can use regular expression here like `(* <package-name>.*.*(..))` to cover all methods in all classes under a package. Tag `<aop:aspect>` defines one actual aspect and its *ref* parameter points to the bean which has the code implementing the aspect. Tag `<aop:advice-type>` specifies what all actions are to be taken. This advice-type can be of any 5 values as mentioned earlier. Moreover, as the example suggests, any of the advices can be used more than once.
 
+```xml
+<bean id="instrumentalist" class="apim.github.tutorial.Instrumentalist" />
+<bean id="audience" class="apim.github.tutorial.Audience" />
+
+<aop:config>
+	<aop:pointcut id="testPointCut" expression="execution(* apim.github.tutorial.Instrumentalist.sing())" />
+	<aop:aspect ref="audience">
+		<aop:before method="takeSeat" pointcut-ref="testPointCut" />
+		<aop:before method="switchOffPhone" pointcut-ref="testPointCut" />
+		<aop:after method="lightsOn" pointcut-ref="testPointCut" />
+		<aop:after-returning method="applaud" pointcut-ref="testPointCut" />
+		<aop:after-throwing method="demandRefund" pointcut-ref="testPointCut" />
+	</aop:aspect>
+</aop:config>
+```
+
 Next develop the Java bean classes.
 
 ```java
@@ -141,4 +157,4 @@ Praising
 
 Now let's re-implement this using annotation. The main annotation is `@Aspect` and to use this there should be a line added into the bean configuration XML as `<aop:aspectj-autoproxy/>`. All the tags for advices discussed above have almost one-to-one mapped annotations defined e.g. **@Before**, **@AfterReturning** etc. These annotations directly accept the pointcut reference as input like `@After("execution(* apim.github.tutorial.Instrumentalist.sing())")` or `@Before(pointcut="execution(* apim.github.tutorial.Instrumentalist.sing())")`. However, there can be cases where same pointcut expression is used at multiple places. To aid this, pointcuts can also be explicitly defined using **@Pointcut** annotation on an empty method (e.g. `@Pointcut("execution(* apim.github.tutorial.Instrumentalist.sing())") private void pointCutService() {})`.
 
-
+There are more features to the Spring's AOP than just method interception. For example, it is easy to interpret the values for the method at pointcut. This is doable by adding an argument of **JoinPoint** to the methods implementing the advices. In addition, *@AfterReturning* advice method can have another argument (type may be *Object*) holding the value being returned from the intercepted method and for this within the annotation a second parameter has to be added as `returning=<argument name>`. Similarly, *@AfterThrowing* can have another argument of type *Throwable* holding the exception being thrown and for this also a second parameter is required within the annotation as `throwing=<argument name>`. Lastly, the missing advice from the above example - `around` (annotation form `@Around`) - here instead of *JoinPoint*, the advice implementation accepts `ProceedingJoinPoint`. Main reason for this is that the advice method, once intercepted pointcut method, shall allow continuation of normal operation by invoking `proceed()` and then again the advice can resume its post processing.
