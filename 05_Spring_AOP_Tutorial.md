@@ -158,3 +158,141 @@ Praising
 Now let's re-implement this using annotation. The main annotation is `@Aspect` and to use this there should be a line added into the bean configuration XML as `<aop:aspectj-autoproxy/>`. All the tags for advices discussed above have almost one-to-one mapped annotations defined e.g. **@Before**, **@AfterReturning** etc. These annotations directly accept the pointcut reference as input like `@After("execution(* apim.github.tutorial.Instrumentalist.sing())")` or `@Before(pointcut="execution(* apim.github.tutorial.Instrumentalist.sing())")`. However, there can be cases where same pointcut expression is used at multiple places. To aid this, pointcuts can also be explicitly defined using **@Pointcut** annotation on an empty method (e.g. `@Pointcut("execution(* apim.github.tutorial.Instrumentalist.sing())") private void pointCutService() {})`.
 
 There are more features to the Spring's AOP than just method interception. For example, it is easy to interpret the values for the method at pointcut. This is doable by adding an argument of **JoinPoint** to the methods implementing the advices. In addition, *@AfterReturning* advice method can have another argument (type may be *Object*) holding the value being returned from the intercepted method and for this within the annotation a second parameter has to be added as `returning=<argument name>`. Similarly, *@AfterThrowing* can have another argument of type *Throwable* holding the exception being thrown and for this also a second parameter is required within the annotation as `throwing=<argument name>`. Lastly, the missing advice from the above example - `around` (annotation form `@Around`) - here instead of *JoinPoint*, the advice implementation accepts `ProceedingJoinPoint`. Main reason for this is that the advice method, once intercepted pointcut method, shall allow continuation of normal operation by invoking `proceed()` and then again the advice can resume its post processing.
+
+To test all these features, let's create new classes with annotations which are similar to the above example and then plug-in the the new items there. A new bean configuration XML for annotation example viz. **spring-context-annot.xml** shall look like below.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<context:component-scan base-package="apim.github.tutorial" />
+	<aop:aspectj-autoproxy />
+
+</beans>
+```
+
+Next, new bean classes - **InstrumentalistAnnot.java** and **AudienceAnnot.java**
+
+```java
+package apim.github.tutorial;
+
+import java.io.IOException;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class InstrumentalistAnnot {
+
+	public void sing() {
+		System.out.println("--- Singing with instrument ---");
+	}
+
+	public Integer perform() {
+		System.out.println("--- This is 75th performance ---");
+		return new Integer(75);
+	}
+
+	public void play() throws IOException {
+		System.out.println("--- Unable to play, throwing exception ---");
+		throw new IOException("Instrument error");
+	}
+
+	public void conduct() {
+		System.out.println("--- Conducting helpers ---");
+	}
+
+}
+```
+
+```java
+package apim.github.tutorial;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
+
+@Component
+@Aspect
+public class AudienceAnnot {
+
+	@Before("execution(* apim.github.tutorial.InstrumentalistAnnot.sing())")
+	public void takeSeat() {
+		System.out.println("Taking seats");
+	}
+
+	@Before("execution(* apim.github.tutorial.InstrumentalistAnnot.sing())")
+	public void switchOffPhone(JoinPoint jp) {
+		System.out.println("Switching off mobile phones. Method intercepted: " + jp.getSignature().getName());
+	}
+
+	@After("execution(* apim.github.tutorial.InstrumentalistAnnot.sing())")
+	public void lightsOn() {
+		System.out.println("Lights are on for audience");
+	}
+
+	@AfterReturning(pointcut = "execution(* apim.github.tutorial.InstrumentalistAnnot.perform())", returning = "val")
+	public void applaud(Object val) {
+		System.out.println("Praising. Intercepted method returned: " + val);
+	}
+
+	@AfterThrowing(pointcut = "execution(* apim.github.tutorial.InstrumentalistAnnot.play())", throwing = "ex")
+	public void demandRefund(Throwable ex) {
+		System.out.println("Demanding refund. Exception message: " + ex.getMessage());
+	}
+
+	@Around("execution(* apim.github.tutorial.InstrumentalistAnnot.conduct())")
+	public void manage(ProceedingJoinPoint pjp) throws Throwable {
+		System.out.println("Around advice before method: " + pjp.getSignature().getName());
+		pjp.proceed();
+		System.out.println("Around advice after method execution");
+	}
+
+}
+```
+
+Lastly, add a new test method *test2()* in the test class to verify the features.
+
+```java
+private static void test2() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context-annot.xml");
+	InstrumentalistAnnot inst = (InstrumentalistAnnot) ctx.getBean("instrumentalistAnnot");
+	inst.sing();
+	inst.perform();
+	try {
+		inst.play();
+	} catch (IOException e) {
+	}
+	inst.conduct();
+	ctx.close();
+}
+```
+
+Expected output is depicted below.
+
+```
+Switching off mobile phones. Method intercepted: sing
+Taking seats
+--- Singing with instrument ---
+Lights are on for audience
+--- This is 75th performance ---
+Praising. Intercepted method returned: 75
+--- Unable to play, throwing exception ---
+Demanding refund. Exception message: Instrument error
+Around advice before method: conduct
+--- Conducting helpers ---
+Around advice after method execution
+```
+
+**Complete source code for this tutorial:** [GitHub](https://github.com/apim/spring-aop-tutorial)
