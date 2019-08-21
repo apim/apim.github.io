@@ -32,7 +32,7 @@ Let's try the ideas with example. Start with creating a new Maven Java project i
 </dependency>
 ```
 
-Now create the important spring configuration **spring-context.xml**. Important point to note in this file is the inclusion of `spring-jdbc` namespace. Next follows usual component scanning for annotation based bean definitions and *datasource* definition which uses MySql driver. Note that you have to edit the credentials & database name as per your environment.
+Now create the main spring configuration **spring-context.xml**. Important point to note in this file is the inclusion of `spring-jdbc` namespace. Next follows usual component scanning for annotation based bean definitions and *datasource* definition which uses MySql driver. Give attention to the properties as you have to edit the credentials & database name as per your environment.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -55,3 +55,142 @@ Now create the important spring configuration **spring-context.xml**. Important 
 
 </beans>
 ```
+
+Next, a simple POJO class **Book.java**. Note that this is not marked with annotations to work as a Spring bean.
+
+```java
+package apim.github.tutorial;
+
+public class Book {
+
+	private int isbn;
+	private String title;
+	private String author;
+
+	// getters and setters
+
+}
+```
+
+After this the RowMapper implementation: **BookRowMapper.java**
+
+```java
+package apim.github.tutorial;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+
+public class BookRowMapper implements RowMapper<Book> {
+
+	@Override
+	public Book mapRow(ResultSet rs, int rowId) throws SQLException {
+		Book book = new Book();
+		book.setIsbn(rs.getInt(1));
+		book.setTitle(rs.getString(2));
+		book.setAuthor(rs.getString(3));
+		return book;
+	}
+
+}
+```
+
+Now comes the crucial piece of code - the DAO class. Here **BookDAO.java** is developed which is marked as spring bean and also datasource is autowired within. *JdbcTemplate* is instantiated from the injected datasource. Several methods are defined to cover all sorts of database operations in practice and they use above-mentioned APIs from JdbcTemplate.
+
+```java
+package apim.github.tutorial;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class BookDAO {
+
+	private DataSource dataSource;
+
+	private JdbcTemplate jdbcTemplate;
+
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+
+	@Resource
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+		jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
+	public void createBookTable() {
+		String query = "create table book (isbn integer not null primary key, title varchar(45) not null, author varchar(45) not null)";
+		jdbcTemplate.execute(query);
+	}
+
+	public void addBook(int isbn, String title, String author) {
+		String query = "insert into book values(?,?,?)";
+		jdbcTemplate.update(query, isbn, title, author);
+	}
+
+	public String getBookTitleByIsbn(int isbn) {
+		String query = "select title from book where isbn=?";
+		return jdbcTemplate.queryForObject(query, String.class, isbn);
+	}
+
+	public Book getBookByAuthor(String author) {
+		String query = "select * from book where author=?";
+		return jdbcTemplate.queryForObject(query, new Object[] { author }, new BookRowMapper());
+	}
+
+	public List<Book> getAllBooks() {
+		String query = "select * from book";
+		return jdbcTemplate.query(query, new BookRowMapper());
+	}
+
+}
+```
+
+Finally, the main class **TestCode.java** to test the code.
+
+```java
+package apim.github.tutorial;
+
+import java.util.List;
+
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class TestCode {
+
+	public static void main(String args[]) {
+		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context.xml");
+		BookDAO dao = (BookDAO) ctx.getBean("bookDAO");
+		dao.createBookTable();
+		dao.addBook(101, "The Target", "David Baldacci");
+		dao.addBook(202, "Hunger Games", "Suzanne Collins");
+		System.out.println(dao.getBookTitleByIsbn(101));
+		Book book = dao.getBookByAuthor("Suzanne Collins");
+		System.out.println(book.getIsbn() + ", " + book.getTitle() + ", " + book.getAuthor());
+		List<Book> books = dao.getAllBooks();
+		for (Book bk : books) {
+			System.out.println(bk.getIsbn() + ", " + bk.getTitle() + ", " + bk.getAuthor());
+		}
+		ctx.close();
+	}
+
+}
+```
+
+Now executing the above shall produce output like below. Also verify (by MySql CLI or your preferred way) that database table is created and populated accordingly.
+
+```
+The Target
+202, Hunger Games, Suzanne Collins
+101, The Target, David Baldacci
+202, Hunger Games, Suzanne Collins
+```
+
+**Complete source code for this tutorial:** [GitHub](https://github.com/apim/spring-jdbc-tutorial)
