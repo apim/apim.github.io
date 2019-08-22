@@ -15,3 +15,4 @@ include:
   - 04_Spring_Tutorial_Using_Annotation.md
   - 05_Spring_AOP_Tutorial.md
   - 06_Spring_JDBC_Tutorial.md
+  - 07_Spring_MVC_Tutorial.md
