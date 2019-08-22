@@ -5,3 +5,14 @@ Spring MVC is a popular framework implementing *Front Controller* design pattern
 ![](/images/spring_mvc.jpg)
 
 All actions here surround the front controller i.e. **DispatcherServlet**, which along with all other above mentioned components are part of the **WebApplicationContext** of Spring. Following steps illustrate the process depicted above.
+
+- Client sends HTTPRequest to `DispatcherServlet` (via web container)
+- DispatcherServlet requests `HandlerMapping` for a proper controller against this client request
+- HandlerMapping returns appropriate controller information
+- DispatcherServlet requests that `Controller` for action
+- Controller (business logic is either implemented here or service is invoked from here) processes the request and returns *MovelAndView* object with logical view name
+- DispathcerServlet requests `ViewResolver` for the actual view implementation
+- ViewResolver returns view information
+- DispatcherServlet requests `View` to prepare the response with the input *Model*
+- View returns rendered response
+- DipatcherServlet returns HTTPResponse to the Client (via web container)

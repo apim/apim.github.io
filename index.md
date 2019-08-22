@@ -2,7 +2,7 @@
 
 This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring MVC, Spring JDBC, Spring Data JPA, Spring Integration etc. topics. The goal is to help new starters cover all core areas with working examples in these technical fields. Below is a list of all tutorial pages.
 
-## Core Spring Concepts
+### Core Spring Concepts
 
 * [Classic Jakarta EE Architecture](01_Classic_Jakarta_EE_Architecture.md)
 * [Spring Overview](02_Spring_Overview.md)
@@ -11,14 +11,14 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 * [Spring AOP Tutorial](05_Spring_AOP_Tutorial.md)
 * [Spring JDBC Tutorial](06_Spring_JDBC_Tutorial.md)
 
-## Spring MVC and REST
+### Spring MVC and REST
 
 * [Spring MVC Tutorial](07_Spring_MVC_Tutorial.md)
 * Spring MVC Form Basics
 * Spring MVC Form Handling
 * Spring REST Tutorial
 
-## Hibernate
+### Hibernate
 
 * Hibernate Basics
 * Hibernate - One to One
@@ -28,19 +28,19 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 * Hibernate - Using Annotation
 * Spring with Hibernate
 
-## JPA and Spring-Data-JPA
+### JPA and Spring-Data-JPA
 
 * JPA Basics
 * Spring with JPA and Hibernate
 * Spring Data JPA Tutorial
 * Spring Transactions Tutorial
 
-## JMS
+### JMS
 
 * JMS Tutorial
 * Spring with JMS and JBoss
 
-## Spring Integration
+### Spring Integration
 
 * Spring Integration Overview
 * Spring Integration Tutorial
