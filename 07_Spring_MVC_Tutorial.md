@@ -16,3 +16,8 @@ All actions here surround the front controller i.e. **DispatcherServlet**, which
 - DispatcherServlet requests `View` to prepare the response with the input *Model*
 - View returns rendered response
 - DipatcherServlet returns HTTPResponse to the Client (via web container)
+
+This tutorial will cover core concepts of Spring MVC and it will include both XML based and annotation based approaches. Begin by creating a new Maven Java Web project in Eclipse as *spring-mvc-tutorial*. Being this a web project, create additional necessary files like web.xml etc. Complete project structure snapshot in eclipse for this tutorial is shown below.
+
+![](/images/proj_struct.jpg)
+
