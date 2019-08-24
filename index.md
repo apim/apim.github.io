@@ -14,7 +14,7 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 ### Spring MVC and REST
 
 * [Spring MVC Tutorial](07_Spring_MVC_Tutorial.md)
-* Spring MVC Form Basics
+* [Spring MVC Form Basics](08_Spring_MVC_Form_Basics.md)
 * Spring MVC Form Handling
 * Spring REST Tutorial
 

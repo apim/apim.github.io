@@ -16,3 +16,4 @@ include:
   - 05_Spring_AOP_Tutorial.md
   - 06_Spring_JDBC_Tutorial.md
   - 07_Spring_MVC_Tutorial.md
+  - 08_Spring_MVC_Form_Basics.md
