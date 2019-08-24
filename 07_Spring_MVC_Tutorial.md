@@ -179,5 +179,73 @@ To test all these together, configure and start the web server through eclipse. 
 
 ![](/images/ex_ss_01.jpg)
 
-### Annotation based Example
+## Annotation based Example
 
+Now let's recreate this example using annotation. Start by adding new dispatcher servlet definition in web.xml. Note that different url pattern is mandatory for servlet mapping.
+
+```xml
+<servlet>
+	<servlet-name>dispatcherAnnot</servlet-name>
+	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	<load-on-startup>1</load-on-startup>
+</servlet>
+```
+
+```xml
+<servlet-mapping>
+	<servlet-name>dispatcherAnnot</servlet-name>
+	<url-pattern>*.form_annot</url-pattern>
+</servlet-mapping>
+```
+
+Next is the actual dispatcher servlet for annotated controller.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/aop/spring-mvc.xsd">
+
+	<context:component-scan base-package="apim.github.tutorial" />
+	
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/views/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+</beans>
+```
+
+Finally, develop a new controller class **TestControllerAnnot.java**. Here class level annotation *@Controller* is used to declare that this is the Spring MVC controller implementation. Now this controller class can contain any method with any signature. Which one needs to act as a service for MVC, that method needs the annotation of `@RequestMapping`. The value being passed to this annotation conforms the specific URL for which this particular controller method will respond to. Along with the URL mapping, HTTP request type can also be specified (default is GET). This method shall return a String which will have the logical view name.
+
+Moreover, this *@RequestMapping* annotation can be applied at class level also. If used in that way, then the URL to access any method within this controller will be pre-padded with the URL mentioned at the class level. For example, if it is defined as `@RequestMapping("/hello") @Controller`, then the testing URL for the first method will become `http://localhost:8080/spring-mvc/hello/test.form_annot`. There are no restrictions on controller class method arguments and more to this will be discussed in the following Spring MVC Form Handling Tutorial.
+
+```java
+package apim.github.tutorial;
+
+import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class TestControllerAnnot {
+
+	@RequestMapping("/test.form_annot")
+	public String handleRequestForTest(Map<String, Object> model) {
+		model.put("message", "Hello World to Spring MVC with Annotation");
+		return "show_message";
+	}
+
+}
+```
+
+Following the similar testing method described earlier and with re-publish of the eclipse project, test against the URL http://localhost:8080/spring-mvc/test.form_annot shall show below output.
+
+![](/images/ex_ss_02.jpg)
+
+**Complete source code for this tutorial:** [GitHub](https://github.com/apim/spring-mvc-tutorial)
