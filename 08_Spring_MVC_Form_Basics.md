@@ -69,7 +69,7 @@ New index.html file:
 </head>
 <body>
 	<div align="center">
-		<form action="post.form" method="post">
+		<form action="get.form" method="get">
 			<table>
 				<tr>
 					<td>Number One:</td>
@@ -92,3 +92,67 @@ New index.html file:
 Now start with the Java coding by creating a small bean class **Numbers.java**. This will be used with the *@ModelAttribute* and will match the input tags present in the input html file. However, it is to note that there is another use of *@ModelAttribute* where it works as view backing object and in that case the annotation is applied at the method level. This feature will be discussed in the following Spring MVC Form Handling Tutorial. Finally, create the controller class **FormController.java** where 3 different methods will be developed. Each method in this class performs as use case for the 3 annotations discussed above.
 
 New Numbers.java file:
+
+```java
+package apim.github.tutorial;
+
+public class Numbers {
+
+	private int ip1;
+	private int ip2;
+
+	// getters and setters
+}
+```
+
+New FormController.java file:
+
+```java
+package apim.github.tutorial;
+
+import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+public class FormController {
+
+	@RequestMapping("/get.form")
+	public String processGet(@RequestParam int ip1, @RequestParam int ip2, Map<String, Object> model) {
+		model.put("message", ip1 + ip2);
+		return "show_message";
+	}
+
+	@RequestMapping("/post.form")
+	public String processPost(@ModelAttribute Numbers ip, Map<String, Object> model) {
+		model.put("message", ip.getIp1() + ip.getIp2());
+		return "show_message";
+	}
+
+	@RequestMapping("/pvtest.form/{val}")
+	public String processPV(@PathVariable int val, Map<String, Object> model) {
+		String result = val % 2 == 0 ? "Even Number" : "Odd Number";
+		model.put("message", result);
+		return "show_message";
+	}
+
+}
+```
+
+For testing, deploy the project as was done in the earlier tutorial. Accessing the application via URL http://localhost:8080/spring-mvc-form/ shall show something like the first image below. Giving some input shall display expected result page similar to the second image below. Note the modified URL where values are being passed as request parameters through *@RequestMapping*.
+
+![](/images/ex_ss_03.jpg)
+
+![](/images/ex_ss_04.jpg)
+
+Next, edit the form fields in HTML to change the `form.action` to `post.form` and `method` to `post`. Testing like before shall product same output however, this time modified URL shall not contain anything as input is going via HTTP Post (sample output is the first image below). Point to note is that input tag *ip1* and *ip2* are mapped by Spring's *@ModelAttribute* to *Numbers* bean's *ip1* and *ip2* fields. Lastly, test the `@PathVariable` via URL http://localhost:8080/spring-mvc-form/pvtest.form/889. A sample response for the given input is shown in the second image below.
+
+![](/images/ex_ss_05.jpg)
+
+![](/images/ex_ss_06.jpg)
+
+**Complete source code for this tutorial:** [GitHub](https://github.com/apim/spring-mvc-form-tutorial)
