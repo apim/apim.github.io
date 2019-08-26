@@ -1,6 +1,6 @@
 theme: jekyll-theme-minimal
 title: Simple Spring Tutorials
-description: This blog helps budding programmers in various Jakarta EE & Spring technologies
+description: This blog helps budding programmers in various Java EE & Spring technologies
 show_downloads: false
 plugins:
   - jekyll-relative-links
@@ -9,7 +9,7 @@ relative_links:
   collections: true
 include:
   - index.md
-  - 01_Classic_Jakarta_EE_Architecture.md
+  - 01_Classic_Java_EE_Architecture.md
   - 02_Spring_Overview.md
   - 03_Spring_Tutorial.md
   - 04_Spring_Tutorial_Using_Annotation.md

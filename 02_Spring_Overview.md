@@ -1,6 +1,6 @@
 # Spring Overview
 
-Spring is an open source Jakarta EE container framework and a popular alternative to legacy EJB framework. Spring has many added advantages over EJB like Dependency Injection and Aspect Oriented Programming etc. The only slight disadvantage it has from EJB that Spring does not support distributed transaction well, which nontheless, is getting itself out of fashion from modern architecture which concentrates more on Micro Services.
+Spring is an open source Java EE container framework and a popular alternative to legacy EJB framework. Spring has many added advantages over EJB like Dependency Injection and Aspect Oriented Programming etc. The only slight disadvantage it has from EJB that Spring does not support distributed transaction well, which nontheless, is getting itself out of fashion from modern architecture which concentrates more on Micro Services.
 
 ## Characteristics of Spring
 
