@@ -3,8 +3,8 @@
 In this tutorial all areas of Spring MVC based form handling will be discussed. Below is a listing of points which are under the scope of this tutorial.
 
 1. How to develop view based on **Spring provided JSP tag libraries** e.g. http://www.springframework.org/tags and http://www.springframework.org/tags/form
-2. How to implement **internationalization (i10n)** in Spring based view e.g. *<spring:message>*
-3. How to make input form based on Spring tags e.g. **<form:form>**, <form:input> and <form:radiobutton> etc.
+2. How to implement **internationalization (i10n)** in Spring based view e.g. *\<spring:message\>*
+3. How to make input form based on Spring tags e.g. **\<form:form\>**, <form:input> and <form:radiobutton> etc.
 4. How to display form input validation error messages inline e.g. **<form:errors>**
 5. How to use *JSR 303* **Bean Validation** in Spring e.g. *@NotNull* etc. annotations
 6. How to use Spring Classic **Form Validation** (with *@InitBinder* & *Validator interface*)
