@@ -130,3 +130,153 @@ Next develop the main form view - **register.jsp**. This is a Spring JSP tag bas
 </html>
 ```
 
+Following the above, another small file is to be developed (at the same place with *register.jsp*) just to show the registration success message. This is **result.jsp** and this file does not contain any new ideas other than what has already been discussed.
+
+```html
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title><spring:message code="title.result.label" /></title>
+</head>
+<body>
+	<div align="center">
+		<h3>${serverMsg}</h3>
+	</div>
+</body>
+</html>
+```
+
+Now create the Java classes. First up is the bean - **RegistrationData.java**. This class is the model and also takes part in validation by *JSR 303 Bean Validation*. This API is a specification and there are many implementation of this, most popular being *hibernate-validator*. However, for the sake of simplicity, we will use *Javax Validation*. Spring is aware of JSR 303 and any implementation will go along. This validation provides few annotations like *@NotNull* and *@Size* which are to be declared on member variables. They work as their name suggests and can be parameterised as shown below. Validation failure error messages also can be directly supplied in the *message* attribute. Although, to use i10n here, it is bit different and the same is explained in the next section.
+
+```java
+package apim.github.tutorial;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+public class RegistrationData {
+
+	@Size(min = 10, max = 80, message = "{Size.registrationData.fullName}")
+	private String fullName;
+
+	@NotNull(message = "{NotNull.registrationData.age}")
+	@Min(value = 18, message = "{Min.registrationData.age}")
+	@Max(value = 30, message = "{Max.registrationData.age}")
+	private Integer age;
+
+	private String address;
+
+	private String sex;
+
+	private String[] classChoices;
+
+	private String campus;
+	
+	// getters and setters
+	
+}
+```
+
+For all *JSR 303* validation errors, there are predefined error messages. Customisation is easy if it is done along with the annotation. However, to enable internationalisation here, one has to define the messages in a file named exactly as **ValidationMessages.properties** and the file should be kept under classpath directly. After this the message keys can be accessed as variables like `${Max.registrationData.age}`.
+
+```
+Size.registrationData.fullName=Name shall be within 10 to 80 characters
+NotNull.registrationData.age=Please enter your age
+Min.registrationData.age=Should be at least 18
+Max.registrationData.age=Maximum 30 years old
+```
+
+Next comes the main controller class **RegistrationController.java**. Few part of this class is commented, initially, as at the first step validation is being tested via Bean Validation API only. Combining both JSR 303 and Classic Spring Form Validation is out of scope of this tutorial. Hence in the next section spring validation will be shown by uncommenting those lines.
+
+At first within the controller the `MessageSource` bean is autowired. Next there is a short handy private method to read the resource bundle. Following that, few methods are defined which work as reference data provider for the form (i.e. methods which supply the master data displayed in UI like contents of comboboxes etc.). They are meant to work like that by the usage of `@ModelAttribute`. Then the method `initialize()` works as *form-backing object* i.e. a method which returns values those are to be pre-selected in the UI. It is obvious that this method uses the *RegistrationData* bean and populates that as necessary. This feature is achievable via annotating the method as `@RequestMapping` and specifying method as `GET`. Spring will use all methods annotated with *@ModelAttribute* before and then the *@RequestMapping (GET)* will be used to prepare the final model for the view.
+
+Next comes the *POST* method `registerStudent()` which will actually handle the form submission. It takes the bean as input and the same is annotated with `@Valid`, followed by `@ModelAttribute`. Purpose of the second annotation is already explained in the previous tutorial and the `@Valid` annotation does the behind-the-scene work for complete bean validation. If there are any validation errors, `BindingResult` parameter is populated automatically. Within the method this parameter is checked at first and the control is returned to the form view if there are any errors.
+
+However, control is not returned directly to the success page. Rather it is done via adding `redirect:/`. And another `@RequestMapping GET` method is defined to present the model for the same. This is done to avoid **dual form submission problem**. Without this, refreshing the result page will *re-submit the form* which is an error case. This is a classic implementation from Spring for the *Post/Get/Redirect* pattern. Along with this, `RedirectAttributes` is present in the POST method signature and no real attribute is added here to bypass the issue of appearance of model values at the URL. Without the use of *RedirectAttributes*, any element of model will be by default displayed in the URL which is an unwanted feature.
+
+```java
+package apim.github.tutorial;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+public class RegistrationController {
+
+	@Autowired
+	MessageSource messageSource;
+
+	/*
+	 * private RegistrationValidator validator;
+	 * 
+	 * @Autowired public void setValidator(RegistrationValidator validator) {
+	 * this.validator = validator; }
+	 * 
+	 * @InitBinder private void initBinder(WebDataBinder binder) {
+	 * binder.setValidator(validator); }
+	 */
+
+	private String label(String key) {
+		return messageSource.getMessage(key, null, null);
+	}
+
+	@ModelAttribute("classList")
+	public List<String> populateClasses() {
+		List<String> list = new ArrayList<>();
+		list.add(label("reference.morning"));
+		list.add(label("reference.afternoon"));
+		list.add(label("reference.evening"));
+		return list;
+	}
+
+	@ModelAttribute("campusList")
+	public List<String> populateCampuses() {
+		List<String> list = new ArrayList<>();
+		list.add(label("reference.campus1"));
+		list.add(label("reference.campus2"));
+		list.add(label("reference.campus3"));
+		list.add(label("reference.campus4"));
+		return list;
+	}
+
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String initialize(Map<String, Object> model) {
+		RegistrationData regData = new RegistrationData();
+		regData.setSex(label("sex.male.label"));
+		regData.setCampus(label("reference.campus2"));
+		model.put("regData", regData);
+		return "register";
+	}
+
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public String registerStudent(Map<String, Object> model, @Valid @ModelAttribute("regData") RegistrationData regData,
+			BindingResult result, RedirectAttributes ra) {
+		if (result.hasErrors()) {
+			return "register";
+		}
+		return "redirect:/result";
+	}
+
+	@RequestMapping(value = "/result", method = RequestMethod.GET)
+	public String view(Map<String, Object> model) {
+		model.put("serverMsg", "Registration Successful");
+		return "result";
+	}
+
+}
+```
