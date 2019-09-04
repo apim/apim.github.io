@@ -15,18 +15,18 @@ In this tutorial all areas of Spring MVC based form handling will be discussed. 
 11. How to use resource bundle within Spring Controller class
 12. How to avoid form double submission at Spring with **Post/Redirect/Get**
 
-Start by creating a new Maven Java Web project in Eclipse as *spring-mvc-form-handling-tutorial*. The *pom.xml* shall be identical to *spring-mvc-form-tutorial* project, except for below two additions which are required for validation feature. The *web.xml* can also be lifted from there as it is.
+Start by creating a new Maven Java Web project in Eclipse as *spring-mvc-form-handling-tutorial*. The *pom.xml* shall be identical to *spring-mvc-form-tutorial* project, except for below two additions which are required for validation feature. `validation-api` defines the specs for bean validation and `hibernate-validator` is one of the most popular implementation of the same. The *web.xml* can also be lifted from there as it is.
 
 ```xml
-<dependency>
-	<groupId>javax.servlet.jsp.jstl</groupId>
-	<artifactId>jstl-api</artifactId>
-	<version>1.2</version>
-</dependency>
 <dependency>
 	<groupId>javax.validation</groupId>
 	<artifactId>validation-api</artifactId>
 	<version>2.0.1.Final</version>
+</dependency>
+<dependency>
+	<groupId>org.hibernate</groupId>
+	<artifactId>hibernate-validator</artifactId>
+	<version>6.0.17.Final</version>
 </dependency>
 ```
 
@@ -147,7 +147,7 @@ Following the above, another small file is to be developed (at the same place wi
 </html>
 ```
 
-Now create the Java classes. First up is the bean - **RegistrationData.java**. This class is the model and also takes part in validation by *JSR 303 Bean Validation*. This API is a specification and there are many implementation of this, most popular being *hibernate-validator*. However, for the sake of simplicity, we will use *Javax Validation*. Spring is aware of JSR 303 and any implementation will go along. This validation provides few annotations like *@NotNull* and *@Size* which are to be declared on member variables. They work as their name suggests and can be parameterised as shown below. Validation failure error messages also can be directly supplied in the *message* attribute. Although, to use i10n here, it is bit different and the same is explained in the next section.
+Now create the Java classes. First up is the bean - **RegistrationData.java**. This class is the model and also takes part in validation by *JSR 303 Bean Validation*. Spring is aware of JSR 303 and any implementation (like *hibernate-validator*) will go along. This validation provides few annotations like *@NotNull* and *@Size* which are to be declared on member variables. They work as their name suggests and can be parameterised as shown below. Validation failure error messages also can be directly supplied in the *message* attribute. Although, to use i10n here, it is bit different and the same is explained in the next section.
 
 ```java
 package apim.github.tutorial;
@@ -180,7 +180,7 @@ public class RegistrationData {
 }
 ```
 
-For all *JSR 303* validation errors, there are predefined error messages. Customisation is easy if it is done along with the annotation. However, to enable internationalisation here, one has to define the messages in a file named exactly as **ValidationMessages.properties** and the file should be kept under classpath directly. After this the message keys can be accessed as variables like `${Max.registrationData.age}`.
+For all *JSR 303* validation errors, there are predefined error messages. Customisation is easy if it is done along with the annotation. However, to enable internationalisation here, one has to define the messages in a file named exactly as **ValidationMessages.properties** and the file should be kept under classpath directly i.e. for Maven projects at *src/main/resources*. The message keys within Java can be accessed as variables like `${Max.registrationData.age}`.
 
 ```
 Size.registrationData.fullName=Name shall be within 10 to 80 characters
@@ -210,6 +210,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -219,17 +221,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class RegistrationController {
 
 	@Autowired
-	MessageSource messageSource;
+	private MessageSource messageSource;
 
-	/*
-	 * private RegistrationValidator validator;
-	 * 
-	 * @Autowired public void setValidator(RegistrationValidator validator) {
-	 * this.validator = validator; }
-	 * 
-	 * @InitBinder private void initBinder(WebDataBinder binder) {
-	 * binder.setValidator(validator); }
-	 */
+	/*private RegistrationValidator validator;
+
+	@Autowired
+	public void setValidator(RegistrationValidator validator) {
+		this.validator = validator;
+	}
+
+	@InitBinder
+	private void initBinder(WebDataBinder binder) {
+		binder.setValidator(validator);
+	}*/
 
 	private String label(String key) {
 		return messageSource.getMessage(key, null, null);
@@ -280,3 +284,51 @@ public class RegistrationController {
 
 }
 ```
+
+It's now time to test. Build and deploy as you prefer. Accessing the url of GET method of the controller http://localhost:8080/spring-mvc-form-handling/login shall load login page as below.
+
+![](/images/ex_ss_07.jpg)
+
+Hitting submit without any input shall demonstrate bean validation in work.
+
+![](/images/ex_ss_08.jpg)
+
+Now fill up some sample valid value and result page shall come up.
+
+![](/images/ex_ss_09.jpg)
+
+Now to see classic spring validation in action. Uncomment the shown lines within controller class. This will introduce the requirement of the last file - **RegistrationValidator.java**. This is a class which implements Spring `Validator interface` and defines methods `supports()` and `validate()`. First one checks whether target class is eligible for this validator implementation or not. Second one contains the logic for programmatic validation and may use Spring provided utility class like `ValidationUtils` etc. Error messages are not usually directly hard-coded here rather their resource bundle keys are used.
+
+To use this validator within the controller, two things are to be done. At first, the validator has to be marked as a bean and the same need to be autowired in the controller. Secondly, a new method needs to be defined, annotated with `@InitBinder`, which will bind this validator instance with the target bean during request processing (thus invocation by Spring context becomes guaranteed). *Nevertheless*, it is to note that using this validator *automatically turns off @Valid* validation.
+
+```java
+package apim.github.tutorial;
+
+import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+
+@Component
+public class RegistrationValidator implements Validator {
+
+	@Override
+	public boolean supports(Class<?> clazz) {
+		return RegistrationData.class.isAssignableFrom(clazz);
+	}
+
+	@Override
+	public void validate(Object target, Errors errors) {
+		RegistrationData data = (RegistrationData) target;
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "address", "registrationData.address.empty");
+		if (data.getClassChoices().length == 0) {
+			errors.rejectValue("classChoices", "registrationData.classChoices.empty");
+		}
+	}
+
+}
+```
+
+Rebuild and deploy. Now submitting without valid values shall engage spring validation and sample output shall be like below.
+
+![](/images/ex_ss_10.jpg)
