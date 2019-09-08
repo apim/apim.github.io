@@ -18,3 +18,4 @@ include:
   - 07_Spring_MVC_Tutorial.md
   - 08_Spring_MVC_Form_Basics.md
   - 09_Spring_MVC_Form_Handling.md
+  - 10_Spring_REST_Tutorial.md
