@@ -181,7 +181,11 @@ public class EmployeeRestController {
 }
 ```
 
-Any standard browser based or standalone REST client can be used to test the application. Build and deploy in your preferred way. Just accessing the GET request url as http://localhost:8080/spring-rest/services/emp/3 shall produce a output in browser as `3Peter100.0`. Upon inspecting the source of the page in browser, you shall see XML data as `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><employee><eid>3</eid><ename>Peter</ename><esal>100.0</esal></employee>`.
+Any standard browser based or standalone REST client can be used to test the application. Build and deploy in your preferred way. Just accessing the GET request url as http://localhost:8080/spring-rest/services/emp/3 shall produce a output in browser as `3Peter100.0`. Upon inspecting the source of the page in browser, you shall see raw XML data as below.
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><employee><eid>3</eid><ename>Peter</ename><esal>100.0</esal></employee>
+```
 
 Now let's develop a simple Spring based REST client. At first, create a new application context XML **spring-context.xml** for use within the client. Content of this file is straighforward - just loading beans through Spring's component scanning.
 
