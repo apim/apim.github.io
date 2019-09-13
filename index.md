@@ -25,7 +25,6 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 * Hibernate - One to Many
 * Hibernate - Many to One
 * Hibernate - Many to Many
-* Hibernate - Using Annotation
 * Spring with Hibernate
 
 ### JPA and Spring-Data-JPA
