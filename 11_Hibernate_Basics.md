@@ -44,6 +44,57 @@ Start with creating a new Maven Java project in Eclipse as *hibernate-tutorial*.
 </project>
 ```
 
+We need a backend table to test the application. So create a DB table at first in MySql.
+
+```sql
+CREATE TABLE `employee` (
+	`ID` int(11) NOT NULL,
+	`NAME` varchar(255) DEFAULT NULL,
+	`DESIGNATION` varchar(255) DEFAULT NULL,
+	`SALARY` int(11) DEFAULT NULL,
+	PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+```
+
+Next create the Java Entity bean **Employee.java**. This is a POJO, doing object relational mapping (*ORM*) for table *employee*. Class is defined through annotation `@Entity` which sets the base for ORM candidacy. Primary key column is annotated with `@Id` and all other fields are annotated as `@Column`. If DB column names are not matching with POJO field names, then *@Column* annotation can be customised with *name* parameter.
+
+```java
+package apim.github.tutorial;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Employee {
+
+	@Id
+	private int id;
+
+	@Column
+	private String name;
+
+	@Column
+	private String designation;
+
+	@Column
+	private int salary;
+
+	public Employee() {
+	}
+
+	public Employee(int id, String name, String designation, int salary) {
+		this.id = id;
+		this.name = name;
+		this.designation = designation;
+		this.salary = salary;
+	}
+
+	// getters and setters
+
+}
+```
+
 
 
 **Complete source code for this tutorial:** [GitHub](https://github.com/apim/hibernate-tutorial)
