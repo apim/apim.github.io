@@ -15,7 +15,7 @@ Here **base-package** is the package where we are instructing Spring to look for
 
 There is another annotation `@Required` which works similar to @Autowired, but functionality is restricted only to setter methods while @Autowired can also work for constructors and fields. @Required checks if a particular property has been set or not and in failure of which Spring throws *BeanInitializationException*. However, @Autowired works basically like @Required unless it is explicitly set to false like *@Autowired(required=false)*.
 
-To test annotations in action, eclipse project developed in the earlier tutorial will be re-used. Create a new context configuration XML there like below.
+To test annotations in action, create a new context configuration XML there like below.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

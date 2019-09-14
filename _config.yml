@@ -20,3 +20,4 @@ include:
   - 09_Spring_MVC_Form_Handling.md
   - 10_Spring_REST_Tutorial.md
   - 11_Hibernate_Basics.md
+  - 12_Hibernate_One_To_One.md
