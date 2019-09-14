@@ -1,21 +1,21 @@
 # Hibernate - One to One
 
-This tutorial will demonstrate Hibernate one-to-one relationship using annotation. Our example contains an *Employee table* and a *Laptop table* where each employee has one laptop. Table creation scripts are shown at first to illustrate the foreign-key relationships. Moreover, we will reuse the sample Maven project created in earlier tutorial.
+This tutorial will demonstrate Hibernate one-to-one relationship using annotation. The example contains an *Employee (employee_one_to_one) table* and a *Laptop table* where each employee has one laptop. Table creation scripts are shown at first to illustrate the foreign-key relationships. Moreover, we will reuse the sample Maven project created in earlier tutorial.
 
 ```sql
 CREATE TABLE `employee_one_to_one` (
-  `ID` int(11) NOT NULL,
-  `NAME` varchar(255) DEFAULT NULL,
-  `DESIGNATION` varchar(255) DEFAULT NULL,
-  `SALARY` int(11) DEFAULT NULL,
-  PRIMARY KEY (`ID`)
+	`ID` int(11) NOT NULL,
+	`NAME` varchar(255) DEFAULT NULL,
+	`DESIGNATION` varchar(255) DEFAULT NULL,
+	`SALARY` int(11) DEFAULT NULL,
+	PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `laptop` (
-  `EID` int(11) NOT NULL,
-  `BRAND` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`EID`),
-  CONSTRAINT `FK_1` FOREIGN KEY (`EID`) REFERENCES `employee_one_to_one` (`ID`)
+	`EID` int(11) NOT NULL,
+	`BRAND` varchar(255) DEFAULT NULL,
+	PRIMARY KEY (`EID`),
+	CONSTRAINT `FK_1` FOREIGN KEY (`EID`) REFERENCES `employee_one_to_one` (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
@@ -200,7 +200,7 @@ public class TestCodeO2O {
 }
 ```
 
-Upon successful execution, above tables will be created and they shall have content like below.
+Upon successful execution, above tables shall have content like below.
 
 ```
 mysql> select * from testdb.employee_one_to_one;

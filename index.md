@@ -22,7 +22,7 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 
 * [Hibernate Basics](11_Hibernate_Basics.md)
 * [Hibernate - One to One](12_Hibernate_One_To_One.md)
-* Hibernate - One to Many & Many to One
+* [Hibernate - One to Many & Many to One](13_Hibernate_BiDirectional.md)
 * Hibernate - Many to Many
 * Spring with Hibernate
 
