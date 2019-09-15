@@ -22,3 +22,4 @@ include:
   - 11_Hibernate_Basics.md
   - 12_Hibernate_One_To_One.md
   - 13_Hibernate_BiDirectional.md
+  - 14_Hibernate_Many_To_Many.md
