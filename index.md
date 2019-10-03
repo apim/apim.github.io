@@ -24,7 +24,7 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 * [Hibernate - One to One](12_Hibernate_One_To_One.md)
 * [Hibernate - One to Many & Many to One](13_Hibernate_BiDirectional.md)
 * [Hibernate - Many to Many](14_Hibernate_Many_To_Many.md)
-* Spring with Hibernate
+* [Spring with Hibernate](15_Spring_with_Hibernate.md)
 
 ### JPA and Spring-Data-JPA
 
