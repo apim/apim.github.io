@@ -24,3 +24,4 @@ include:
   - 13_Hibernate_BiDirectional.md
   - 14_Hibernate_Many_To_Many.md
   - 15_Spring_with_Hibernate.md
+  - 16_JPA_Basics.md
