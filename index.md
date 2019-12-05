@@ -29,7 +29,7 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 ### JPA and Spring-Data-JPA
 
 * [JPA Basics](16_JPA_Basics.md)
-* Spring with JPA and Hibernate
+* [Spring with JPA](17_Spring_JPA_Tutorial.md)
 * Spring Data JPA Tutorial
 * Spring Transactions Tutorial
 

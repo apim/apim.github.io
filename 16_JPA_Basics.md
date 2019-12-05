@@ -101,7 +101,7 @@ public class Customer {
 }
 ```
 
-Lastly, the class to test the features - **TestCode.java**. This is how JPA is used - at first an `EntityManager` object is created via one `EntityManagerFactory` instance. Then from this manager object other DB operation related objects are instantiated on the fly. For inserting data, `EntityTransaction` is created from manager. For reading data, `createQuery` API is used from manager object. If the complete table is selected, then `query.getResultList()` output can be directly casted to a generic type (e.g. *List<Customer>*). Otherwise when there is a particular select clause, then `query.getResultList()` output shall be consumed as *List<Object[]>*.
+Lastly, the class to test the features - **TestCode.java**. This is how JPA is used - at first an `EntityManager` object is created via one `EntityManagerFactory` instance. Then from this manager object other DB operation related objects are instantiated on the fly. For inserting data, `EntityTransaction` is created from manager. For reading data, `createQuery` API is used from manager object. If the complete table is selected, then `query.getResultList()` output can be directly casted to a generic type (e.g. `List<Customer>`). Otherwise, when there is a particular select clause then the same output shall be consumed as `List<Object[]>`.
 
 ```java
 package apim.github.tutorial;
