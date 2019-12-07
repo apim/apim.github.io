@@ -26,3 +26,4 @@ include:
   - 15_Spring_with_Hibernate.md
   - 16_JPA_Basics.md
   - 17_Spring_JPA_Tutorial.md
+  - 18_Spring_Data_JPA_Tutorial.md
