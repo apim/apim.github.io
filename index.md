@@ -35,7 +35,7 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 
 ### JMS
 
-* JMS Tutorial
+* [JMS Tutorial](20_JMS_Tutorial.md)
 * Spring with JMS and JBoss
 
 ### Spring Integration

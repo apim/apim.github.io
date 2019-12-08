@@ -6,13 +6,13 @@ Programmatic transaction is achieved by two means - by use of `PlatformTransacti
 
 In short, there are 4 important methods in TransactionDefinition and different combination of values being set there (in the concrete class implementing the interface TransactionDefinition) creates different transactional use cases.
 
-1. `getTimeout()` - returns transaction's timeout value (-1 refers to never)
-2. `isReadOnly()` - tells whether a transaction can make database changes or not (likely set to 'true' for read operations)
-3. `getIsolationLevel()` - has all the ANSI/ISO transaction isolation level values plus one spring specific one. Below diagram gives a brief overview of all these
+* `getTimeout()` - returns transaction's timeout value (-1 refers to never)
+* `isReadOnly()` - tells whether a transaction can make database changes or not (likely set to 'true' for read operations)
+* `getIsolationLevel()` - has all the ANSI/ISO transaction isolation level values plus one spring specific one. Below diagram gives a brief overview of all these
 
 ![](/images/tx_isolations.jpg)
 
-4. `getPropagationBehavior()` - is used when there are multiple operations / methods are included and the value set here dictates how the case of transaction initiated / not initiated in the first method is handled in the second method. Below diagram gives a brief overview of all these
+* `getPropagationBehavior()` - is used when there are multiple operations / methods are included and the value set here dictates how the case of transaction initiated / not initiated in the first method is handled in the second method. Below diagram gives a brief overview of all these
 
 ![](/images/tx_propagations.jpg)
 
