@@ -28,4 +28,5 @@ include:
   - 17_Spring_JPA_Tutorial.md
   - 18_Spring_Data_JPA_Tutorial.md
   - 19_Spring_Transactions_Overview.md
-  - 20_JMS_Tutorial.md
+  - 20_Spring_Integration_Overview.md
+  - 21_Spring_Integration_Tutorial.md
