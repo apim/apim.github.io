@@ -31,7 +31,7 @@ This blog hosts various tutorial articles on Spring, Hibernet, JPA, JMS, Spring 
 * [JPA Basics](16_JPA_Basics.md)
 * [Spring with JPA](17_Spring_JPA_Tutorial.md)
 * [Spring Data JPA Tutorial](18_Spring_Data_JPA_Tutorial.md)
-* Spring Transactions Tutorial
+* [Spring Transactions Overview](19_Spring_Transactions_Overview.md)
 
 ### JMS
 
