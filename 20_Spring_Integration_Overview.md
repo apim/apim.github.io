@@ -18,6 +18,25 @@ You can connect two channels via a Bridge. Bridge is a trivial end-point where t
 There are various types of endpoints supported in Spring Integration and here is a brief listing of them (all are based upon at least one or some of the EAI patterns).
 
 * **Transformer** - Converts a message's content and/or structure and returns the modified message.
-![](/images/sp_p1.jpg)
+![](/images/si_p1.jpg)
 
 * **Filter** - Determines whether a message should be passed to an output channel at all.
+![](/images/si_p2.jpg)
+
+* **Router** - Decides what output channel or channels shall receive the input message (if any). It is a proactive solution compared to reactive approach in Filter. 
+![](/images/si_p3.jpg)
+
+* **Splitter** - Decomposes the input message into multiple messages and send them to its output channel or channels for prospective different processing. 
+![](/images/si_p4.jpg)
+
+* **Aggregtor** - Like mirror image of Splitter. Composes messages from input channel into a single message. This is stateful as it stores the status of final message aggregation. 
+![](/images/si_p5.jpg)
+
+* **ServiceActivator** - A particular end-point which connects a service to the messaging system. Upon receiving message in the input channel, service activator invokes a service which may or may not return a response. In the case a response comes, the same is forwarded to an output channel. Request to the external service is always a synchronous call. 
+![](/images/si_p6.jpg)
+
+* **Channel Adapter** - A particular end-point which connects an application to the messaging system. This can be either inbound or outbound, essentially, always uni-directional. There are various channel adapter supports inbuilt in Spring Integration for JMS, HTTP, Files, FTP, Mail etc. Below diagram is an example of inbound channel adapter. 
+![](/images/si_p7.jpg)
+
+* **Gateway** - Hides messaging API within an application API and essentially, can be bi-directional. An application invokes Spring Integration messaging code by just making a method call and the said method implementation contains all messaging logic (the concerned method is configured in Spring context and from that Spring manages all messaging parts like channels and endpoints etc.). By this way the rest of the parts of an application code get totally decoupled from Spring Integration part.
+![](/images/si_p8.jpg)
