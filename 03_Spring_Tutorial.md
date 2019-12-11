@@ -1,6 +1,6 @@
 # Spring Tutorial
 
-This tutorial will cover all basic concepts of Spring and all tutorials here will consist of full hands-on practices. Platform used is Windows 10, with all *latest versions* of *Eclipse*, *JDK8* & *Maven* installed. Complete source for all tutorials is given at the end of the pages as a link to the GitHub repository. Finally, for the sake of brevity, standard auto generated getter and setter methods are ommitted in below code snippets.
+This tutorial will cover all basic concepts of Spring and all tutorials here will consist of full hands-on practices. Platform used is Windows 10, with all *latest versions* of *Eclipse*, *JDK8* & *Maven* installed. Complete source for all tutorials is given at the end of the pages as a link to the GitHub repository. Finally, for the sake of brevity, standard auto generated getter and setter methods are ommitted in below code snippets and throughout other examples in this blog.
 
 Begin by creating a new Maven Java project in Eclipse as *spring-tutorial*.
 
