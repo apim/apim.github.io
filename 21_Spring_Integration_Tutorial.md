@@ -185,3 +185,175 @@ public class TestCode {
 	
 }
 ```
+
+## Filter
+
+Just add this line in the context XML, configuration is very much alike to the Transformer.
+
+```xml
+<int:filter input-channel="inputChannel" output-channel="outputChannel" ref="dataFilter" />
+```
+
+Next make a POJO **Order.java** to use with this example.
+
+```java
+package apim.github.tutorial;
+
+public class Order {
+
+	private int id;
+
+	private double amount;
+
+	// getters and setters
+
+	public String toString() {
+		return id + "-" + amount;
+	}
+
+}
+```
+
+Now create the actual filter implementation **DataFilter.java** which will do the job of selective passing of messages. Method annotated with `@Filter` shall return a boolean value to decide whether the input message shall be copied to the output channel.
+
+```java
+package apim.github.tutorial;
+
+import org.springframework.integration.annotation.Filter;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DataFilter {
+
+	@Filter
+	public boolean isValidOrder(Order msg) {
+		return msg.getAmount() > 1000;
+	}
+
+}
+```
+
+Then prepare the test method. Notice that here two different Order objects are made and sent through the channel. The first one shall not pass through, therefore, the `receive()` is invoked with a timeout value and for the second one, we are correctly expecting a response.
+
+```java
+private static void testFilter() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context.xml");
+	MessageChannel channel = (MessageChannel) ctx.getBean("inputChannel");
+	PollableChannel outputChannel = (PollableChannel) ctx.getBean("outputChannel");
+
+	Order o = new Order();
+	o.setId(1);
+	o.setAmount(800);
+	Message<Order> msg = MessageBuilder.withPayload(o).build();
+
+	channel.send(msg);
+	Message<?> msgRcvd = outputChannel.receive(1000);
+	System.out.println("Message received : " + msgRcvd);
+
+	o.setId(2);
+	o.setAmount(1200);
+	msg = MessageBuilder.withPayload(o).build();
+
+	channel.send(msg);
+	msgRcvd = outputChannel.receive();
+	System.out.println("Message received : " + (Order) msgRcvd.getPayload());
+
+	ctx.close();
+}
+```
+
+## Router
+
+Add below router configurations in the context XML. The alternate channel is added to show that router shall produce output to different messaging channels based on business logic.
+
+```xml
+<int:channel id="alternateChannel">
+	<int:queue capacity="5" />
+</int:channel>
+
+<int:router input-channel="inputChannel" ref="customRouter" />
+```
+
+Create the POJO **Item.java** for the example.
+
+```java
+package apim.github.tutorial;
+
+public class Item {
+
+	private String name;
+
+	private int dimension;
+
+	// getters and setters
+
+	public String toString() {
+		return name + "-" + dimension;
+	}
+
+}
+```
+
+Now develop the router implementation **CustomRouter.java**. Method annotated with `@Router` shall return a collection of *String* or *MessageChannel*. In case of String, they shall match exactly to the channel names.
+
+```java
+package apim.github.tutorial;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.integration.annotation.Router;
+import org.springframework.stereotype.Component;
+
+@Component
+public class CustomRouter {
+
+	@Router
+	public List<String> routeMessage(Item msg) {
+		List<String> rsp = new ArrayList<>();
+		if (msg.getDimension() > 100) {
+			rsp.add("alternateChannel");
+		} else {
+			rsp.add("outputChannel");
+			rsp.add("alternateChannel");
+		}
+		return rsp;
+	}
+
+}
+```
+
+Lastly, create the test method where at first scenario output is available only in the alternate channel; and in the second case it appears in both the channels.
+
+```java
+private static void testRouter() {
+	ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-context.xml");
+	MessageChannel channel = (MessageChannel) ctx.getBean("inputChannel");
+	PollableChannel outputChannel = (PollableChannel) ctx.getBean("outputChannel");
+	PollableChannel alternateChannel = (PollableChannel) ctx.getBean("alternateChannel");
+
+	Item it = new Item();
+	it.setName("item-1");
+	it.setDimension(150);
+	Message<Item> msg = MessageBuilder.withPayload(it).build();
+
+	channel.send(msg);
+	Message<?> msgRcvd1 = outputChannel.receive(1000);
+	Message<?> msgRcvd2 = alternateChannel.receive();
+	System.out.println("Message received at outputChannel: " + msgRcvd1);
+	System.out.println("Message received at alternateChannel: " + (Item) msgRcvd2.getPayload());
+
+	it.setName("item-2");
+	it.setDimension(50);
+	msg = MessageBuilder.withPayload(it).build();
+
+	channel.send(msg);
+	msgRcvd1 = outputChannel.receive();
+	msgRcvd2 = alternateChannel.receive();
+	System.out.println("Message received at outputChannel: " + (Item) msgRcvd2.getPayload());
+	System.out.println("Message received at alternateChannel: " + (Item) msgRcvd2.getPayload());
+
+	ctx.close();
+}
+```
+
